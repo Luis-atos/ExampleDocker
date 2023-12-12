@@ -1,0 +1,26 @@
+pipeline{
+   agent any
+   
+   options {
+    timeout(time: 2, unit: 'HOURS')   // timeout on whole pipeline job
+   }
+   tools{
+	    maven "apache-maven-3.8.6"
+	   jdk "jdk-11.0.16.1"
+   }
+
+
+   stages {
+        stage ('OWASP Dependency-Check Vulnerabilities') {
+            steps {
+                dependencyCheck additionalArguments: ''' 
+                    -o "./" 
+                    -s "./"
+                    -f "ALL" 
+                    --prettyPrint''', odcInstallation: 'dependency-check843'
+
+                dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+            }
+        }     
+    }
+}
